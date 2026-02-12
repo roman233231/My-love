@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.2, user-scalable=yes, viewport-fit=cover">
+  <title> Ти — моя перемога · менше сердець</title>
+  <link rel="icon" type="image/svg+xml"
+href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='0.9em'%20font-size='90'%3E%E2%9D%A4%EF%B8%8F%3C/text%3E%3C/svg%3E">
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --heart-soft: #ff8da1;
+      --heart-bold: #ff5f7c;
+      --glass-bg: rgba(255, 250, 250, 0.8);
+      --glass-border: rgba(255, 240, 245, 0.7);
+      --text-rose: #6a3a44;
+      --shadow-warm: rgba(200, 110, 130, 0.2);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at 30% 40%, #ffe9ef, #ffdee6, #ffd3dd);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 20px;
+      position: relative;
+      animation: bgBreath 26s infinite alternate;
+    }
+
+    @keyframes bgBreath {
+      0% { background: radial-gradient(circle at 25% 30%, #fff3f7, #ffe4ec, #ffdae3); }
+      100% { background: radial-gradient(circle at 70% 70%, #ffeef2, #ffdfe7, #ffd1dc); }
+    }
+
+    /* ===== ЛІТАЮЧІ СЕРЦЯ — ТЕПЕР ЇХ МЕНШЕ ===== */
+    .floating-hearts {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .heart-particle-bg {
+      position: absolute;
+      font-size: clamp(22px, 4.5vw, 38px); /* трохи менший максимум */
+      color: rgba(255, 90, 120, 0.55);
+      animation: floatAround 28s linear infinite; /* повільніше */
+      user-select: none;
+      text-shadow: 0 0 20px rgba(255, 140, 170, 0.6);
+      will-change: transform, opacity;
+      left: 0;
+      top: -10%;
+      opacity: 0.55;
+    }
+
+    @keyframes floatAround {
+      0% { transform: translateY(0) translateX(0) rotate(0deg) scale(0.8); opacity: 0.5; }
+      30% { opacity: 0.7; }
+      100% { transform: translateY(120vh) translateX(calc(60px * var(--x-offset, 1))) rotate(540deg) scale(1.2); opacity: 0.1; }
+    }
+
+    /* ===== КАРТКА — ЕТАЛОННА ПРОПОРЦІЯ ===== */
+    .card {
+      position: relative;
+      z-index: 20;
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-radius: 48px;
+      padding: 40px 36px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 30px 60px rgba(255, 90, 120, 0.25),
+                  inset 0 2px 12px rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+    }
+
+    @media (max-width: 450px) {
+      .card {
+        padding: 28px 22px;
+        border-radius: 36px;
+      }
+    }
+
+    @media (min-width: 1000px) {
+      .card {
+        max-width: 780px;
+        padding: 48px 48px;
+        border-radius: 60px;
+      }
+    }
+
+    /* прогрес */
+    .progress {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 44px;
+      flex-wrap: wrap;
+    }
+
+    .progress-dot {
+      height: 12px;
+      width: 12px;
+      background: rgba(170, 120, 140, 0.2);
+      border-radius: 30px;
+      transition: width 0.5s cubic-bezier(0.34, 1.5, 0.64, 1);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .progress-dot.active {
+      width: 56px;
+      max-width: 70px;
+      background: linear-gradient(145deg, #ffa0b2, #ff5a7a);
+      box-shadow: 0 0 24px #ff8da1, 0 0 10px white;
+      border: none;
+    }
+
+    @media (max-width: 400px) {
+      .progress-dot.active {
+        width: 42px;
+      }
+    }
+
+    /* кроки */
+    .step {
+      display: none;
+      opacity: 0;
+      animation: fadeSlide 0.6s cubic-bezier(0.19, 1, 0.3, 1) forwards;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes fadeSlide {
+      0% { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(4px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    .icon-giant {
+      font-size: 64px;
+      line-height: 1;
+      margin-bottom: 10px;
+      display: inline-block;
+      animation: levitate 4s infinite ease-in-out;
+      filter: drop-shadow(0 12px 18px rgba(255, 100, 130, 0.2));
+    }
+
+    @media (max-width: 450px) {
+      .icon-giant {
+        font-size: 56px;
+      }
+    }
+
+    @keyframes levitate {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    h2 {
+      font-size: 36px;
+      font-weight: 680;
+      color: var(--text-rose);
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 450px) {
+      h2 {
+        font-size: 30px;
+      }
+    }
+
+    .subhead {
+      font-size: 20px;
+      font-weight: 450;
+      color: #7e4e58;
+      border-bottom: 2px dashed rgba(255, 130, 160, 0.6);
+      display: inline-block;
+      padding-bottom: 8px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 450px) {
+      .subhead {
+        font-size: 18px;
+        margin-bottom: 26px;
+      }
+    }
+
+    .message-box {
+      background: rgba(255, 248, 250, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 44px;
+      padding: 28px 32px;
+      font-size: 18px;
+      line-height: 1.6;
+      color: #4e313a;
+      margin-bottom: 32px;
+      border: 1px solid rgba(255, 210, 220, 0.8);
+      box-shadow: inset 0 2px 12px rgba(255,255,255,0.7);
+    }
+
+    @media (max-width: 450px) {
+      .message-box {
+        padding: 22px 24px;
+        font-size: 16px;
+        border-radius: 32px;
+      }
+    }
+
+    /* сітка якостей */
+    .heart-qualities {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+
+    .heart-card {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255, 180, 200, 0.6);
+      border-radius: 32px;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      transition: 0.25s;
+      cursor: pointer;
+      box-shadow: 0 6px 0 rgba(200, 130, 150, 0.1);
+    }
+
+    .heart-card:hover {
+      background: white;
+      border-color: #ff6b8b;
+      transform: translateY(-6px);
+      box-shadow: 0 18px 28px rgba(255,90,120,0.2);
+    }
+
+    .heart-card.selected {
+      background: linear-gradient(145deg, #ffe6ef, #ffd2dd);
+      border: 3px solid #ff3b5c;
+      box-shadow: 0 0 0 8px rgba(255,60,100,0.08);
+    }
+
+    .heart-emoji {
+      font-size: 52px;
+      filter: drop-shadow(2px 10px 12px rgba(200,70,90,0.15));
+    }
+
+    .heart-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #632e38;
+    }
+
+    .heart-desc {
+      font-size: 15px;
+      color: #76525a;
+    }
+
+    @media (max-width: 450px) {
+      .heart-card {
+        padding: 20px 12px;
+      }
+      .heart-emoji {
+        font-size: 48px;
+      }
+      .heart-title {
+        font-size: 18px;
+      }
+      .heart-desc {
+        font-size: 14px;
+      }
+    }
+
+    /* опції */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .option-btn {
+      background: rgba(255, 255, 255, 0.7);
+      border: 2px solid rgba(255, 160, 180, 0.7);
+      border-radius: 100px;
+      padding: 16px 28px;
+      font-size: 18px;
+      font-weight: 550;
+      color: #5a3540;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: 0.2s;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      width: 100%;
+      box-shadow: 0 5px 0 rgba(180,120,130,0.1);
+    }
+
+    .option-btn:hover {
+      background: white;
+      border-color: #ff6f8c;
+      transform: translateY(-4px);
+      box-shadow: 0 18px 26px rgba(255,100,130,0.25);
+    }
+
+    .option-btn.selected {
+      background: linear-gradient(145deg, #ffe3ec, #ffd0dc);
+      border: 3px solid #ff4d6d;
+      color: #4a2a34;
+      font-weight: 680;
+      box-shadow: 0 0 0 8px rgba(255,70,110,0.08);
+    }
+
+    @media (max-width: 450px) {
+      .option-btn {
+        padding: 14px 22px;
+        font-size: 16px;
+        gap: 12px;
+      }
+    }
+
+    /* фідбек */
+    .feedback {
+      min-height: 60px;
+      font-size: 18px;
+      color: #b14d60;
+      font-weight: 550;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255, 220, 235, 0.65);
+      padding: 14px 28px;
+      border-radius: 60px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.9);
+      margin: 8px 0 24px;
+    }
+
+    @media (max-width: 450px) {
+      .feedback {
+        font-size: 16px;
+        padding: 12px 22px;
+      }
+    }
+
+    /* навігація */
+    .nav-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      background: white;
+      padding: 16px 36px;
+      font-size: 18px;
+      font-weight: 620;
+      border-radius: 60px;
+      color: #61343e;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid rgba(255,255,255,0.8);
+      box-shadow: 0 10px 24px rgba(150,80,100,0.15);
+      backdrop-filter: blur(6px);
+      flex: 1 1 auto;
+    }
+
+    .btn-primary {
+      background: linear-gradient(145deg, #ffdee6, #ffc6d2);
+      color: #562e38;
+      border: 1px solid #ffe3ec;
+      font-weight: 700;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(145deg, #ffcad6, #ffb0c0);
+      transform: translateY(-4px);
+      box-shadow: 0 22px 32px rgba(255,100,130,0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+
+    @media (max-width: 450px) {
+      .btn {
+        padding: 14px 28px;
+        font-size: 16px;
+      }
+    }
+
+    /* фінал */
+    .final-container {
+      text-align: center;
+      background: rgba(255, 250, 252, 0.85);
+      backdrop-filter: blur(24px);
+      border-radius: 64px;
+      padding: 48px 44px;
+      border: 2px solid rgba(255,255,255,0.8);
+      box-shadow: 0 28px 60px rgba(200,80,110,0.25);
+    }
+
+    .victory-heart {
+      font-size: 90px;
+      animation: heartbeat 1.9s infinite;
+      filter: drop-shadow(0 0 28px #ff9aae);
+      margin-bottom: 12px;
+    }
+
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      20% { transform: scale(1.25); }
+      40% { transform: scale(1.08); }
+      60% { transform: scale(1.2); }
+    }
+
+    .final-title {
+      font-size: 42px;
+      font-weight: 750;
+      color: #b84c60;
+      text-shadow: 0 4px 26px #ffb8c6;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .final-message {
+      font-size: 22px;
+      color: #6d3a44;
+      margin-bottom: 20px;
+    }
+
+    .final-promise {
+      background: rgba(255, 230, 240, 0.65);
+      backdrop-filter: blur(12px);
+      border-radius: 48px;
+      padding: 28px 32px;
+      margin: 32px 0;
+      border: 2px dashed #ff6f8c;
+      font-size: 18px;
+      text-align: left;
+    }
+
+    .final-promise p {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .promise-icon {
+      font-size: 26px;
+      min-width: 44px;
+    }
+
+    @media (max-width: 550px) {
+      .final-container {
+        padding: 32px 24px;
+        border-radius: 48px;
+      }
+      .victory-heart {
+        font-size: 70px;
+      }
+      .final-title {
+        font-size: 32px;
+      }
+      .final-message {
+        font-size: 18px;
+      }
+      .final-promise {
+        padding: 22px 20px;
+        font-size: 16px;
+      }
+    }
+
+    /* таймер */
+    .timer-container {
+      background: rgba(255, 240, 248, 0.7);
+      backdrop-filter: blur(20px);
+      border-radius: 60px;
+      padding: 28px 26px;
+      margin-top: 36px;
+      border: 1px solid white;
+    }
+
+    .timer-title {
+      font-size: 26px;
+      color: #6a4650;
+      margin-bottom: 24px;
+    }
+
+    .timer-grid {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .timer-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 90px;
+    }
+
+    .timer-number {
+      font-size: 48px;
+      font-weight: 750;
+      color: #c14259;
+      text-shadow: 0 0 24px rgba(255,100,130,0.5);
+      background: rgba(255,255,255,0.6);
+      padding: 12px 18px;
+      border-radius: 32px;
+      backdrop-filter: blur(8px);
+      width: 100%;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .timer-number.bump {
+      transform: scale(1.2);
+    }
+
+    .timer-label {
+      font-size: 14px;
+      color: #6e4a52;
+      margin-top: 10px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+    }
+
+    @media (max-width: 550px) {
+      .timer-number {
+        font-size: 38px;
+        padding: 8px 12px;
+      }
+      .timer-block {
+        min-width: 70px;
+      }
+    }
+
+    /* фінальний напис */
+    .bottom-love {
+      text-align: center;
+      margin-top: 60px;
+      margin-bottom: 20px;
+      font-size: 36px;
+      font-weight: 550;
+      color: #a13e51;
+      text-shadow: 0 0 40px #ffa7b8;
+      letter-spacing: 2px;
+      animation: softShine 2.8s infinite;
+      position: relative;
+      z-index: 30;
+      width: 100%;
+    }
+
+    @keyframes softShine {
+      0%,100% { opacity: 0.95; transform: scale(1); text-shadow: 0 0 30px #ffa5b5; }
+      50% { opacity: 1; transform: scale(1.01); text-shadow: 0 0 50px #ff8da1; }
+    }
+
+    .bottom-love span {
+      display: inline-block;
+      margin: 0 14px;
+      animation: tinyHeart 2.2s infinite;
+    }
+
+    @keyframes tinyHeart {
+      0%,100% { transform: scale(1); }
+      30% { transform: scale(1.2); }
+    }
+
+    .heart-left, .heart-right {
+      font-size: 42px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 550px) {
+      .bottom-love {
+        font-size: 28px;
+        margin-top: 40px;
+      }
+      .heart-left, .heart-right {
+        font-size: 34px;
+      }
+    }
+
+    /* салют */
+    .heart-rain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 45;
+      display: none;
+    }
+
+    .heart-rain.active {
+      display: block;
+    }
+
+    .heart-particle {
+      position: absolute;
+      font-size: clamp(20px, 5vw, 34px);
+      animation: rainFast 3.2s linear forwards;
+      color: #ff6f8c;
+      text-shadow: 0 0 24px #ff8da1;
+      opacity: 0.5;
+    }
+
+    @keyframes rainFast {
+      0% { transform: translateY(-10vh) rotate(0deg) scale(0.7); opacity: 0.6; }
+      100% { transform: translateY(120vh) rotate(720deg) scale(1.2); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ЛІТАЮЧІ ФОНОВІ СЕРЦЯ — ТЕПЕР ЇХ ПОМІТНО МЕНШЕ -->
+<div class="floating-hearts" id="floatingHearts"></div>
+
+<!-- ФІНАЛЬНИЙ САЛЮТ -->
+<div class="heart-rain" id="heartRain"></div>
+
+<!-- КАРТКА -->
+<div class="card">
+  <div class="progress" id="progressDots">
+    <span class="progress-dot active"></span>
+    <span class="progress-dot"></span>
+    <span class="progress-dot"></span>
+    <span class="progress-dot"></span>
+    <span class="progress-dot"></span>
+    <span class="progress-dot"></span>
+    <span class="progress-dot"></span>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="step1" class="step active">
+    <div class="icon-giant">🌸</div>
+    <h2>14 лютого</h2>
+    <div class="subhead">День, коли серця говорять правду</div>
+    <div class="message-box">
+      Я приготував для тебе квест із 6 запитань.<br>
+      Кожна твоя відповідь — це ще один спогад, ще одна причина сказати тобі "дякую". Готова?
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-primary" id="startBtn">Так, почнемо ✨</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step2" class="step">
+    <div class="icon-giant">🌿</div>
+    <h2>Питання 1/6</h2>
+    <div class="subhead">Наша перша зустріч — що запам'яталося найбільше?</div>
+    <div class="options" id="step2Options">
+      <button class="option-btn" data-value="eyes">✨ Твої очі, коли ти посміхнувся</button>
+      <button class="option-btn" data-value="words">💬 Ті особливі слова</button>
+      <button class="option-btn" data-value="hugs">🤗 Твої перші обійми</button>
+    </div>
+    <div class="feedback" id="step2Feedback"></div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" id="backFromStep2">Назад</button>
+      <button class="btn btn-primary" id="step2Next" disabled>Далі 💫</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="step3" class="step">
+    <div class="icon-giant">💝</div>
+    <h2>Питання 2/6</h2>
+    <div class="subhead">Яка моя риса зігріває твоє серце? (можна вибрати кілька)</div>
+    <div class="heart-qualities" id="heartGrid">
+      <div class="heart-card" data-value="care"><span class="heart-emoji">🤗</span><span class="heart-title">Турбота</span><span class="heart-desc">ти завжди поруч, коли треба</span></div>
+      <div class="heart-card" data-value="humor"><span class="heart-emoji">🎭</span><span class="heart-title">Гумор</span><span class="heart-desc">із тобою я сміюся щодня</span></div>
+      <div class="heart-card" data-value="honesty"><span class="heart-emoji">🕊️</span><span class="heart-title">Щирість</span><span class="heart-desc">твоя правда — моя опора</span></div>
+      <div class="heart-card" data-value="passion"><span class="heart-emoji">🔥</span><span class="heart-title">Пристрасть</span><span class="heart-desc">вогонь, який не згасає</span></div>
+      <div class="heart-card" data-value="calm"><span class="heart-emoji">🌊</span><span class="heart-title">Спокій</span><span class="heart-desc">ти вмієш заспокоїти одним поглядом</span></div>
+      <div class="heart-card" data-value="support"><span class="heart-emoji">💪</span><span class="heart-title">Підтримка</span><span class="heart-desc">ти віриш у мене, навіть коли я сам сумніваюсь</span></div>
+    </div>
+    <div class="feedback" id="step3Feedback"></div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" id="backFromStep3">Назад</button>
+      <button class="btn btn-primary" id="step3Next" disabled>Далі 🌷</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div id="step4" class="step">
+    <div class="icon-giant">🎵</div>
+    <h2>Питання 3/6</h2>
+    <div class="subhead">Яке наше спільне заняття тобі найбільше до вподоби?</div>
+    <div class="options" id="step4Options">
+      <button class="option-btn" data-value="movies">🍿 Дивитися TikTok разом</button>
+      <button class="option-btn" data-value="cooking">🍕 Смакувати їжу разом</button>
+      <button class="option-btn" data-value="walks">🚶 Гуляти вечірнім містом</button>
+      <button class="option-btn" data-value="music">🎧 Слухати музику разом</button>
+    </div>
+    <div class="feedback" id="step4Feedback"></div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" id="backFromStep4">Назад</button>
+      <button class="btn btn-primary" id="step4Next" disabled>Далі 🍃</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div id="step5" class="step">
+    <div class="icon-giant">😄</div>
+    <h2>Питання 4/6</h2>
+    <div class="subhead">Хто кого завоював?</div>
+    <div class="options" id="step5Options">
+      <button class="option-btn" data-value="me">😎 Ти мене — харизмою</button>
+      <button class="option-btn" data-value="you">😇 Я тебе — красою</button>
+      <button class="option-btn" data-value="both">💘 Це було взаємно з першого погляду</button>
+    </div>
+    <div class="feedback" id="step5Feedback"></div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" id="backFromStep5">Назад</button>
+      <button class="btn btn-primary" id="step5Next" disabled>Далі 💌</button>
+    </div>
+  </div>
+
+  <!-- STEP 6 – ГОЛОВНЕ ПИТАННЯ -->
+  <div id="step6" class="step">
+    <div class="icon-giant">💞</div>
+    <h2>Питання 5/6</h2>
+    <div class="subhead">Найважливіше...</div>
+    <div class="message-box" style="font-size: 32px; font-weight: 700; text-align: center; color: #b84c5e;">
+      Ти будеш моєю Валентинкою?
+    </div>
+    <div class="options" style="flex-direction: row; justify-content: center; gap: 18px;" id="step6Options">
+      <button class="option-btn" id="finalYesBtn" style="flex:1; justify-content:center; font-size: 24px;">Так ❤️</button>
+      <button class="option-btn" id="finalNoBtn" style="flex:1; justify-content:center; font-size: 24px;">Мені треба подумати 🥺</button>
+    </div>
+    <div class="feedback" id="step6Feedback"></div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" id="backFromStep6">Назад</button>
+    </div>
+  </div>
+
+  <!-- STEP 7 – ФІНАЛ -->
+  <div id="step7" class="step">
+    <div class="final-container">
+      <div class="victory-heart">💖</div>
+      <h1 class="final-title">ТИ СКАЗАЛА «ТАК»! 💖</h1>
+      <div class="final-message">
+        🥺 Дівчинко моя, ти навіть не уявляєш,<br>як багато це для мене означає.
+      </div>
+      <div class="final-message">
+        Кожен день поруч із тобою — це справжній подарунок.<br>
+        Кожна твоя посмішка — моя найбільша перемога.
+      </div>
+      <div class="final-promise">
+        <p style="font-size: 22px; margin-bottom: 20px; font-weight: 600;">💌 Я обіцяю тобі:</p>
+        <p><span class="promise-icon">💗</span> Бути поруч не лише в радості, а й тоді, коли важко.</p>
+        <p><span class="promise-icon">💗</span> Підтримувати тебе й вірити в нас навіть у найбурхливіші моменти.</p>
+        <p><span class="promise-icon">💗</span> Смішити тебе, коли настрій раптом тікає.</p>
+        <p><span class="promise-icon">💗</span> Дивувати, надихати й ніколи не переставати закохуватися в тебе знову.</p>
+      </div>
+      <div style="font-size: 24px; color: #a04555; margin: 28px 0 20px;">
+        З Днем Святого Валентина, моя найрідніша.
+      </div>
+      <div style="font-size: 20px; color: #7a4a55; margin-bottom: 20px;">
+        Ти — моє серце, мій спокій і моє натхнення. ❤️
+      </div>
+      <!-- ТАЙМЕР -->
+      <div class="timer-container">
+        <div class="timer-title">⏳ Ми разом вже</div>
+        <div class="timer-grid" id="timerGrid">
+          <div class="timer-block"><span class="timer-number" id="days">0</span><span class="timer-label">днів</span></div>
+          <div class="timer-block"><span class="timer-number" id="hours">0</span><span class="timer-label">годин</span></div>
+          <div class="timer-block"><span class="timer-number" id="minutes">0</span><span class="timer-label">хвилин</span></div>
+          <div class="timer-block"><span class="timer-number" id="seconds">0</span><span class="timer-label">секунд</span></div>
+        </div>
+        <p style="margin-top: 24px; font-size: 18px; color: #a1515e;">І це лише початок нашої вічності...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ФІНАЛЬНИЙ НАПИС "Я ТЕБЕ ЛЮБЛЮ" -->
+<div class="bottom-love">
+  <span class="heart-left">💗</span> Я тебе люблю <span class="heart-right">💗</span>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ========== ГЛОБАЛЬНІ ЗМІННІ ==========
+    const steps = {
+      1: document.getElementById('step1'),
+      2: document.getElementById('step2'),
+      3: document.getElementById('step3'),
+      4: document.getElementById('step4'),
+      5: document.getElementById('step5'),
+      6: document.getElementById('step6'),
+      7: document.getElementById('step7')
+    };
+    const dots = document.querySelectorAll('.progress-dot');
+    let currentStep = 1;
+
+    let step2Answered = false;
+    let step3Answered = false;
+    let step4Answered = false;
+    let step5Answered = false;
+
+    let answers = {
+  step2: null,
+  step3: [],
+  step4: null,
+  step5: null,
+  final: null
+};
+
+    // ========== ПЕРЕХІД МІЖ КРОКАМИ ==========
+    function goToStep(toStep) {
+      Object.values(steps).forEach(s => s.classList.remove('active'));
+      steps[toStep].classList.add('active');
+      currentStep = toStep;
+      dots.forEach((dot, idx) => {
+        dot.classList.remove('active');
+        if (idx + 1 === toStep) dot.classList.add('active');
+      });
+      if (toStep === 2) document.getElementById('step2Next').disabled = !step2Answered;
+      if (toStep === 3) document.getElementById('step3Next').disabled = !step3Answered;
+      if (toStep === 4) document.getElementById('step4Next').disabled = !step4Answered;
+      if (toStep === 5) document.getElementById('step5Next').disabled = !step5Answered;
+    }
+
+    // ========== ІНІЦІАЛІЗАЦІЯ ОДИНОЧНОГО ВИБОРУ ==========
+    function initSingleChoice(optionsId, feedbackId, msg, flag) {
+      const opts = document.querySelectorAll(`#${optionsId} .option-btn`);
+      const fb = document.getElementById(feedbackId);
+      opts.forEach(btn => {
+        btn.addEventListener('click', function() {
+          opts.forEach(b => b.classList.remove('selected'));
+          this.classList.add('selected');
+
+          const value = this.dataset.value;
+
+if (flag === 'step2') answers.step2 = value;
+if (flag === 'step4') answers.step4 = value;
+if (flag === 'step5') answers.step5 = value;
+
+          fb.innerHTML = `<span>❤️ ${msg}</span>`;
+          if (flag === 'step2') { step2Answered = true; document.getElementById('step2Next').disabled = false; }
+          if (flag === 'step4') { step4Answered = true; document.getElementById('step4Next').disabled = false; }
+          if (flag === 'step5') { step5Answered = true; document.getElementById('step5Next').disabled = false; }
+        });
+      });
+    }
+
+    initSingleChoice('step2Options', 'step2Feedback', '💕 Я теж пам’ятаю. Той момент назавжди зі мною.', 'step2');
+    initSingleChoice('step4Options', 'step4Feedback', '✨ Чудовий вибір! Я теж це обожнюю.', 'step4');
+    initSingleChoice('step5Options', 'step5Feedback', '😘 Я знав, що це взаємно!', 'step5');
+
+    // ========== КРОК 3 – МУЛЬТИВИБІР ==========
+    const heartCards = document.querySelectorAll('.heart-card');
+    const step3Feedback = document.getElementById('step3Feedback');
+    heartCards.forEach(card => {
+      card.addEventListener('click', function() {
+        this.classList.toggle('selected');
+        answers.step3 = Array.from(heartCards)
+  .filter(c => c.classList.contains('selected'))
+  .map(c => c.dataset.value);
+
+        const anySelected = Array.from(heartCards).some(c => c.classList.contains('selected'));
+        step3Answered = anySelected;
+        document.getElementById('step3Next').disabled = !anySelected;
+        step3Feedback.innerHTML = anySelected ? '<span>❤️ Дякую, що помічаєш у мені такі риси. Це безцінно.</span>' : '';
+      });
+    });
+
+    // ========== КРОК 6 – ВАЛЕНТИНКА ==========
+    const finalYesBtn = document.getElementById('finalYesBtn');
+    const finalNoBtn = document.getElementById('finalNoBtn');
+    const step6Feedback = document.getElementById('step6Feedback');
+    let noClickCount = 0;
+
+    finalYesBtn.addEventListener('click', function() {
+        answers.final = "yes";
+
+if (window.saveAnswers) {
+  saveAnswers(answers);
+}
+      step6Feedback.innerHTML = '<span>❤️❤️❤️ Ти зробила мене найщасливішим!</span>';
+      goToStep(7);
+      startHeartRain();
+      startTimer();
+      dots.forEach((dot, idx) => { dot.classList.remove('active'); if (idx === 6) dot.classList.add('active'); });
+    });
+
+    finalNoBtn.addEventListener('click', function() {
+      noClickCount++;
+      if (noClickCount === 1) step6Feedback.innerHTML = '😊 Впевнена? Натисни ще раз, якщо передумаєш.';
+      else if (noClickCount === 2) step6Feedback.innerHTML = '🥺 Ну будь ласка… Ти — найкраще, що в мене є.';
+      else if (noClickCount === 3) step6Feedback.innerHTML = '💞 Я все одно нікуди не дінусь. Я чекатиму.';
+      else finalYesBtn.click();
+    });
+
+    // ========== НАВІГАЦІЯ ==========
+    document.getElementById('startBtn').addEventListener('click', () => goToStep(2));
+    document.getElementById('backFromStep2').addEventListener('click', () => goToStep(1));
+    document.getElementById('backFromStep3').addEventListener('click', () => goToStep(2));
+    document.getElementById('backFromStep4').addEventListener('click', () => goToStep(3));
+    document.getElementById('backFromStep5').addEventListener('click', () => goToStep(4));
+    document.getElementById('backFromStep6').addEventListener('click', () => goToStep(5));
+    document.getElementById('step2Next').addEventListener('click', () => goToStep(3));
+    document.getElementById('step3Next').addEventListener('click', () => goToStep(4));
+    document.getElementById('step4Next').addEventListener('click', () => goToStep(5));
+    document.getElementById('step5Next').addEventListener('click', () => goToStep(6));
+
+    // ========== ТАЙМЕР ==========
+    function startTimer() {
+      const startDate = new Date(2025, 9, 15, 15, 0, 0);
+      function updateTimer() {
+        const now = new Date();
+        const diff = now - startDate;
+        if (diff < 0) return;
+        const days = Math.floor(diff / (1000*60*60*24));
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        const ids = ['days','hours','minutes','seconds'];
+        const vals = [days, hours, minutes, seconds];
+        ids.forEach((id,i) => {
+          const el = document.getElementById(id);
+          if (el.innerText != vals[i]) {
+            el.innerText = vals[i];
+            el.classList.add('bump');
+            setTimeout(() => el.classList.remove('bump'), 250);
+          }
+        });
+      }
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    }
+
+    // ========== ФІНАЛЬНИЙ САЛЮТ ==========
+    function startHeartRain() {
+      const rain = document.getElementById('heartRain');
+      rain.classList.add('active');
+      for (let i = 0; i < 80; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.className = 'heart-particle';
+          heart.innerHTML = ['❤️','🧡','💛','💚','💙','💜','🤍','💖','💗','💘','💝','💞'][Math.floor(Math.random()*12)];
+          heart.style.left = Math.random() * 100 + '%';
+          heart.style.animationDelay = Math.random() * 2 + 's';
+          heart.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+          heart.style.fontSize = (Math.floor(Math.random() * 22) + 20) + 'px';
+          heart.style.opacity = Math.random() * 0.4 + 0.3;
+          rain.appendChild(heart);
+          setTimeout(() => heart.remove(), 5000);
+        }, i * 12);
+      }
+    }
+
+    // ========== ФОНОВІ ЛІТАЮЧІ СЕРЦЯ — ТЕПЕР ЇХ МЕНШЕ ==========
+    const floatingContainer = document.getElementById('floatingHearts');
+    const heartIcons = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🤍', '💖', '💕', '💘', '💞'];
+
+    function createFloatingHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart-particle-bg';
+      heart.innerText = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+      heart.style.left = Math.random() * 100 + '%';
+      heart.style.top = -10 + Math.random() * 10 + '%';
+      heart.style.fontSize = (Math.floor(Math.random() * 22) + 22) + 'px'; // 22–44px
+      heart.style.animationDuration = (Math.random() * 20 + 26) + 's'; // повільніше
+      heart.style.opacity = (Math.random() * 0.3 + 0.45).toFixed(2);
+      heart.style.setProperty('--x-offset', Math.random() * 2 - 1);
+      floatingContainer.appendChild(heart);
+      heart.addEventListener('animationend', () => heart.remove());
+    }
+
+    // Зменшуємо кількість: замість 45 -> 25, інтервал замість 260 -> 400 мс
+    for (let i = 0; i < 25; i++) {
+      setTimeout(() => createFloatingHeart(), i * 40);
+    }
+    setInterval(createFloatingHeart, 400);
+
+    // ========== СТАРТ ==========
+    goToStep(1);
+  })();
+</script>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC30e7C1lfsC_MFTHn6fv5K-U4kRxxwBQI",
+  authDomain: "love-quiz-c7539.firebaseapp.com",
+  projectId: "love-quiz-c7539",
+  storageBucket: "love-quiz-c7539.firebasestorage.app",
+  messagingSenderId: "693374018749",
+  appId: "1:693374018749:web:6c747cdaf02a554c33c3d4",
+  measurementId: "G-7L8PGV4H3F"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.saveAnswers = async function(data) {
+  try {
+    await addDoc(collection(db, "responses"), {
+      ...data,
+      createdAt: new Date()
+    });
+    console.log("Збережено 💖");
+  } catch (e) {
+    console.error("Помилка:", e);
+  }
+};
+
+</script>
+
+</body>
+</html>
